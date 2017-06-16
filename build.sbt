@@ -12,6 +12,6 @@ licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 libraryDependencies ++= Seq(
   "io.swagger" % "swagger-codegen" % "2.2.0",
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
 )
