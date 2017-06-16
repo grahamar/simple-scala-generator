@@ -1,0 +1,36 @@
+#!/bin/bash
+
+SWAGGER_HOME=`dirname $0`
+SWAGGER_CLI=`find $SWAGGER_HOME -regex '^.*swagger-codegen-cli-[0-9]\.[0-9]\.[0-9]\.jar$' | head -n 1`
+if [ ! -f $SWAGGER_CLI ]; then
+    echo "Failed to find the Swagger CLI jar!"
+    exit 1
+fi
+
+# Confirm java >= 1.7
+JAVA=`which java`
+if [ -x $JAVA ]; then
+    java_version=`$JAVA -version 2>&1|head -n 1`
+    regex="([0-9])\.([0-9])*"
+    if [[ $java_version =~ $regex ]]; then
+	major=${BASH_REMATCH[1]}
+	minor=${BASH_REMATCH[2]}
+	if [ $major != 1 -o $minor -lt 7 ]; then
+	    echo "Unacceptable java version ($java_version)!"
+	    exit 1
+	fi
+    fi
+else
+    echo "Can't find java on the path!"
+    exit 1
+fi
+
+# Support classpath extension (for custom generators) via $CP and explicit JVM
+# args via $JVM_ARGS.
+if [ -z $CP ]; then
+  CP=$SWAGGER_CLI
+else
+  CP=$CP:$SWAGGER_CLI
+fi
+
+exec $JAVA -cp $CP $JVM_ARGS io.swagger.codegen.SwaggerCodegen "$@"

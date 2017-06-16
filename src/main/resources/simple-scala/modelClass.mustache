@@ -1,0 +1,15 @@
+sealed case class {{classname}} (
+{{#vars}}{{#description}}/* {{{description}}} */
+{{/description}}  {{{name}}}: {{#required}}{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{/required}}{{^required}}Option[{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}]{{/required}}{{#hasMore}},{{/hasMore}}{{^hasMore}}){{#parent}} extends {{parent}}{{/parent}}{{/hasMore}}
+{{/vars}}
+
+object {{classname}} {
+  {{#hasEnums}}{{#vars}}{{#isEnum}}{{> modelEnum}}{{/isEnum}}{{/vars}}{{/hasEnums}}
+
+  {{#includeSerialization}}
+  import play.api.data.validation.ValidationError
+  import play.api.libs.json._
+
+  {{>classFormat}}
+  {{/includeSerialization}}
+}
