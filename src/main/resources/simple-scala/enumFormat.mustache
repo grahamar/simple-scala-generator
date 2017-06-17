@@ -4,7 +4,7 @@ implicit val {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}
       {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
         .fromValue(x)
         .map(JsSuccess(_))
-        .getOrElse(JsError(Seq(JsPath() -> s"Unknown value '$x' for '{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}' enum")))
+        .getOrElse(JsError(JsPath() -> s"Unknown value '$x' for '{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}' enum"))
     }
   }
 
