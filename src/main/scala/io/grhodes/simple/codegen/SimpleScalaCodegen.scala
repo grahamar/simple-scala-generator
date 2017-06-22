@@ -12,7 +12,6 @@ import scala.collection.JavaConverters._
 
 object SimpleScalaCodegen {
   val ARG_INCLUDE_SERIALIZATION = "includeSerialization"
-  val sourceFolder = "src/main/scala"
   val NUMBER_TYPES = Set("Int", "Long", "Float", "Double")
 
   def camelize(parts: Array[String]): String = {
@@ -31,7 +30,7 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
   override def getTag(): CodegenType = CodegenType.CLIENT
 
   val invokerPackage = new AtomicReference[String]("swagger.models")
-  val invokerFolder = new AtomicReference[String](s"$sourceFolder/${invokerPackage.get}".replace(".", "/"))
+  val invokerFolder = new AtomicReference[String](invokerPackage.get.replace(".", "/"))
 
   {
     outputFolder = "generated-code/" + getName()
@@ -111,7 +110,7 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
     super.processOpts()
     additionalProperties.put(CodegenConstants.INVOKER_PACKAGE, invokerPackage.get())
     modelPackage = invokerPackage.get()
-    invokerFolder.set(s"$sourceFolder/$invokerPackage".replace(".", "/"))
+    invokerFolder.set(invokerPackage.get.replace(".", "/"))
     val incSer = additionalProperties.get(ARG_INCLUDE_SERIALIZATION)
     val includeSerialization: java.lang.Boolean = Option(incSer).forall(java.lang.Boolean.TRUE.toString.equals(_))
     additionalProperties.put(ARG_INCLUDE_SERIALIZATION, includeSerialization)
@@ -139,13 +138,13 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
     * Location to write model files.  You can use the modelPackage() as defined when the class is
     * instantiated
     */
-  override def modelFileFolder() = s"$outputFolder/$sourceFolder/${modelPackage().replace('.', File.separatorChar)}"
+  override def modelFileFolder() = s"$outputFolder/${modelPackage().replace('.', File.separatorChar)}"
 
   /**
     * Location to write api files.  You can use the apiPackage() as defined when the class is
     * instantiated
     */
-  override def apiFileFolder(): String = s"$outputFolder/$sourceFolder/${apiPackage().replace('.', File.separatorChar)}"
+  override def apiFileFolder(): String = s"$outputFolder/${apiPackage().replace('.', File.separatorChar)}"
 
   /**
     * Optional - type declaration.  This is a String which is used by the templates to instantiate your
