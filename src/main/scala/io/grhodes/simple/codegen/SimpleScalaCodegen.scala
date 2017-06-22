@@ -109,8 +109,12 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
     Option(givenInvPkg).foreach(pkg => invokerPackage.set(pkg.toString))
     super.processOpts()
     additionalProperties.put(CodegenConstants.INVOKER_PACKAGE, invokerPackage.get())
-    modelPackage = invokerPackage.get()
-    invokerFolder.set(invokerPackage.get.replace(".", "/"))
+
+    modelPackage = Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".model").getOrElse("model")
+    apiPackage = Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".api").getOrElse("api")
+
+    invokerFolder.set(invokerPackage.get().replace(".", "/"))
+
     val incSer = additionalProperties.get(ARG_INCLUDE_SERIALIZATION)
     val includeSerialization: java.lang.Boolean = Option(incSer).forall(java.lang.Boolean.TRUE.toString.equals(_))
     additionalProperties.put(ARG_INCLUDE_SERIALIZATION, includeSerialization)
@@ -118,7 +122,7 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
 
   override def postProcessModels(objs: util.Map[String, AnyRef]): util.Map[String, AnyRef] = {
     val imports = objs.get("imports").asInstanceOf[util.List[util.Map[String, String]]].asScala
-    val prefix = modelPackage() + "."
+    val prefix = Option(modelPackage()).filter(_.nonEmpty).map(_  + ".").getOrElse("")
     val objects = Map(objs.asScala.toSeq: _*) ++ Map(
       "imports" -> imports.filterNot(_.get("import").startsWith(prefix)).asJava
     )
