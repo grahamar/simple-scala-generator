@@ -1,4 +1,5 @@
 sealed abstract class {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}(val value: {{#dataType}}{{.}}{{/dataType}}{{^dataType}}{{datatype}}{{/dataType}}) extends Product with Serializable
+
 object {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} {
 
   {{#allowableValues}}{{#enumVars}}case object {{name}} extends {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}({{{value}}})
@@ -19,12 +20,5 @@ object {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{cla
   * if there is one.
   */
   def fromValue(value: {{#dataType}}{{.}}{{/dataType}}{{^dataType}}{{datatype}}{{/dataType}}): Option[{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] = valueMap.get(value)
-
-  {{#includeSerialization}}
-  import play.api.data.validation.ValidationError
-  import play.api.libs.json._
-
-  {{>enumFormat}}
-  {{/includeSerialization}}
 
 }

@@ -72,25 +72,29 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
       "String"
     ).asJava
 
-    instantiationTypes.put("date-time", "ZonedDateTime")
     instantiationTypes.put("array", "List")
     instantiationTypes.put("integer", "Int")
 
-    importMapping.put("ZonedDateTime", "java.time.ZonedDateTime")
-
-    typeMapping.put("date", "LocalDate")
-    typeMapping.put("DateTime", "ZonedDateTime")
-
     typeMapping.put("int", "Int")
     typeMapping.put("Integer", "Int")
-
+    typeMapping.put("date", "LocalDate")
+    typeMapping.put("Date", "LocalDate")
     typeMapping.put("timestamp", "Instant")
-    importMapping.put("Instant", "java.time.Instant")
-
+    typeMapping.put("datetime", "ZonedDateTime")
+    typeMapping.put("date-time", "ZonedDateTime")
+    typeMapping.put("DateTime", "ZonedDateTime")
     typeMapping.put("local-time", "LocalTime")
-    importMapping.put("LocalTime", "java.time.LocalTime")
-
     typeMapping.put("local-date-time", "LocalDateTime")
+
+    importMapping.remove("Set")
+    importMapping.remove("Seq")
+    importMapping.remove("List")
+    importMapping.remove("Set")
+    importMapping.remove("Map")
+    importMapping.put("LocalTime", "java.time.LocalTime")
+    importMapping.put("Instant", "java.time.Instant")
+    importMapping.put("LocalDate", "java.time.LocalDate")
+    importMapping.put("ZonedDateTime", "java.time.ZonedDateTime")
     importMapping.put("LocalDateTime", "java.time.LocalDateTime")
 
     modelTemplateFiles.put("model.mustache", ".scala")
@@ -170,7 +174,7 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
     * @see io.swagger.models.properties.Property
     */
   override def getSwaggerType(p: Property): String = {
-    val types = Set("timestamp", "local-time", "local-date-time")
+    val types = Set("date", "date-time", "timestamp", "local-time", "local-date-time")
 
     val swaggerType = if (p.getClass.equals(classOf[StringProperty]) && types.contains(p.getFormat)) {
       p.getFormat
