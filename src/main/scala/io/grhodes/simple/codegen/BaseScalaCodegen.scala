@@ -110,13 +110,11 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
       super.getSchemaType(p)
     }
 
-    val typ = if (typeMapping.containsKey(swaggerType)) {
+    if (typeMapping.containsKey(swaggerType)) {
       typeMapping.get(swaggerType)
     } else {
-      swaggerType
+      toModelName(swaggerType)
     }
-
-    toModelName(typ)
   }
 
   override def toEnumName(property: CodegenProperty): String = camelize(property.name.split("_"))
