@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils
 import scala.collection.JavaConverters._
 
 object SimplePlayCodegen {
+  val ARG_RESOURCE_OUTPUT_DIRECTORY = "resourceOutputDirectory"
   val ARG_INCLUDE_SERIALIZATION = "includeSerialization"
   val NUMBER_TYPES = Set("Int", "Long", "Float", "Double")
 
@@ -36,6 +37,7 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
   {
     outputFolder = "generated-code/" + getName()
     cliOptions.add(CliOption.newBoolean(ARG_INCLUDE_SERIALIZATION, "To include or not include serializers in the model classes"))
+    cliOptions.add(CliOption.newBoolean(ARG_RESOURCE_OUTPUT_DIRECTORY, "The output resource directory"))
 
     /*
      * Template Location.  This is the location which templates will be read from.  The generator
@@ -48,8 +50,9 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
      */
     apiPackage = "swagger.api"
 
+    val resourceOutDir = Option(additionalProperties.get(ARG_RESOURCE_OUTPUT_DIRECTORY)).map(_.toString).getOrElse("conf")
     supportingFiles = List(
-      new SupportingFile("routes.mustache", "conf", "generated.routes")
+      new SupportingFile("routes.mustache", resourceOutDir, "generated.routes")
     ).asJava
 
     /*
