@@ -1,7 +1,7 @@
 package com.meetup.codegen;
 
 import io.grhodes.simple.codegen.SimpleScalaCodegen;
-import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.v3.CodegenType;
 
 public final class TestScalaCodegen {
 

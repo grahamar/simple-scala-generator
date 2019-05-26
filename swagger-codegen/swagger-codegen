@@ -33,4 +33,4 @@ else
   CP=$CP:$SWAGGER_CLI
 fi
 
-exec $JAVA -cp $CP $JVM_ARGS io.swagger.codegen.SwaggerCodegen "$@"
+exec $JAVA -cp $CP $JVM_ARGS io.swagger.codegen.v3.cli.SwaggerCodegen "$@"

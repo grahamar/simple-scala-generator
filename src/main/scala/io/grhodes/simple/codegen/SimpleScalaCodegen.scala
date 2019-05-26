@@ -4,8 +4,9 @@ import java.io.File
 import java.util
 import java.util.concurrent.atomic.AtomicReference
 
-import io.swagger.codegen._
-import io.swagger.models.properties.{ArrayProperty, MapProperty, Property, StringProperty}
+import io.swagger.codegen.v3._
+import io.swagger.codegen.v3.generators.scala.AbstractScalaCodegen
+import io.swagger.v3.oas.models.media.{Schema, StringSchema}
 import org.apache.commons.lang3.StringUtils
 
 import scala.collection.JavaConverters._
@@ -22,10 +23,11 @@ object SimpleScalaCodegen {
 
 }
 
-class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
+class SimpleScalaCodegen extends AbstractScalaCodegen with CodegenConfig {
   import SimpleScalaCodegen._
 
   override def getHelp(): String = s"Generates ${getName()} library."
+  override def getDefaultTemplateDir: String = getName()
   override def getName(): String = "simple-scala"
   override def getTag(): CodegenType = CodegenType.CLIENT
 
@@ -52,25 +54,8 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
      */
     modelPackage = "swagger.models"
 
-    reservedWords = Set(
-      "abstract", "case", "catch", "class", "def", "do", "else", "extends",
-      "false", "final", "finally", "for", "forSome", "if", "implicit",
-      "import", "lazy", "match", "new", "null", "object", "override",
-      "package", "private", "protected", "return", "sealed", "super",
-      "this", "throw", "trait", "try", "true", "type", "val", "var",
-      "while", "with", "yield"
-    ).asJava
-
-    languageSpecificPrimitives = Set(
-      "Boolean",
-      "Double",
-      "Float",
-      "Int",
-      "Long",
-      "List",
-      "Map",
-      "String"
-    ).asJava
+    additionalProperties.put("java8", "true")
+    additionalProperties.put("jsr310", "true")
 
     instantiationTypes.put("array", "List")
     instantiationTypes.put("integer", "Int")
@@ -91,11 +76,13 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
     importMapping.remove("List")
     importMapping.remove("Set")
     importMapping.remove("Map")
+
     importMapping.put("LocalTime", "java.time.LocalTime")
     importMapping.put("Instant", "java.time.Instant")
     importMapping.put("LocalDate", "java.time.LocalDate")
     importMapping.put("ZonedDateTime", "java.time.ZonedDateTime")
     importMapping.put("LocalDateTime", "java.time.LocalDateTime")
+    importMapping.put("OffsetDateTime", "java.time.OffsetDateTime")
 
     modelTemplateFiles.put("model.mustache", ".scala")
   }
@@ -135,14 +122,6 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
   }
 
   /**
-    * Escapes a reserved word as defined in the `reservedWords` array. Handle escaping
-    * those terms here.  This logic is only called if a variable matches the reseved words
-    *
-    * @return the escaped term
-    */
-  override def escapeReservedWord(name: String): String = s"`$name`"
-
-  /**
     * Location to write model files.  You can use the modelPackage() as defined when the class is
     * instantiated
     */
@@ -155,31 +134,19 @@ class SimpleScalaCodegen extends DefaultCodegen with CodegenConfig {
   override def apiFileFolder(): String = s"$outputFolder/${apiPackage().replace('.', File.separatorChar)}"
 
   /**
-    * Optional - type declaration.  This is a String which is used by the templates to instantiate your
-    * types.  There is typically special handling for different property types
-    *
-    * @return a string value used as the `dataType` field for model templates, `returnType` for api templates
-    */
-  override def getTypeDeclaration(p: Property): String = p match {
-    case ap: ArrayProperty => s"${getSwaggerType(p)}[${getTypeDeclaration(ap.getItems)}]"
-    case mp: MapProperty => s"${getSwaggerType(p)}[String, ${getTypeDeclaration(mp.getAdditionalProperties)}]"
-    case _ => super.getTypeDeclaration(p)
-  }
-
-  /**
     * Optional - swagger type conversion.  This is used to map swagger types in a `Property` into
     * either language specific types via `typeMapping` or into complex models if there is not a mapping.
     *
     * @return a string value of the type or complex model for this property
     * @see io.swagger.models.properties.Property
     */
-  override def getSwaggerType(p: Property): String = {
+  override def getSchemaType(p: Schema[_]): String = {
     val types = Set("date", "date-time", "timestamp", "local-time", "local-date-time")
 
-    val swaggerType = if (p.getClass.equals(classOf[StringProperty]) && types.contains(p.getFormat)) {
+    val swaggerType = if (p.getClass.equals(classOf[StringSchema]) && types.contains(p.getFormat)) {
       p.getFormat
     } else {
-      super.getSwaggerType(p)
+      super.getSchemaType(p)
     }
 
     val typ = if (typeMapping.containsKey(swaggerType)) {

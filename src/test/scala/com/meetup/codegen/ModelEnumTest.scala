@@ -2,9 +2,10 @@ package com.meetup.codegen
 
 import java.util.{Arrays => JArrays, HashMap => JHashMap, List => JList, Map => JMap}
 import java.util.Collections
-import io.swagger.models.ModelImpl
-import io.swagger.models.properties.{IntegerProperty, StringProperty}
+
+import io.swagger.v3.oas.models.media.{IntegerSchema, NumberSchema, ObjectSchema, Schema, StringSchema}
 import org.scalatest.{FunSpec, Matchers}
+
 import scala.collection.JavaConverters._
 
 class ModelEnumTest extends FunSpec with Matchers {
@@ -33,15 +34,16 @@ class ModelEnumTest extends FunSpec with Matchers {
 
     /* Build up the unprocessed model. */
 
-    val stringEnumProperty = new StringProperty
+    val stringEnumProperty = new StringSchema
     stringEnumProperty.setEnum(JArrays.asList("apple", "stripe"))
 
-    val intEnumProperty = new IntegerProperty
+    val intEnumProperty = new IntegerSchema
     intEnumProperty.setEnum(JArrays.asList(1, 2))
 
-    val model = new ModelImpl()
-      .property("some_strings", stringEnumProperty)
-      .property("some_ints", intEnumProperty)
+    val model = new ObjectSchema().properties(mapAsJavaMapConverter(Map[String, Schema[_]](
+      "some_strings" -> stringEnumProperty,
+      "some_ints" -> intEnumProperty
+    )).asJava)
 
     /*
      * Now push the model through the relevant processing stages. Note that
@@ -79,7 +81,7 @@ class ModelEnumTest extends FunSpec with Matchers {
     }
 
     it("should have only enum properties") {
-      properties.forall(_.isEnum == true) shouldBe true
+      properties.forall(_.getIsEnum == true) shouldBe true
     }
 
     it("should have an enum whose baseType is \"String\"") {
@@ -87,7 +89,7 @@ class ModelEnumTest extends FunSpec with Matchers {
     }
 
     it("should have an enum whose baseType is \"Integer\"") {
-      properties.exists(_.baseType == "Integer") shouldBe true
+      properties.exists(_.baseType == "Int") shouldBe true
     }
   }
 

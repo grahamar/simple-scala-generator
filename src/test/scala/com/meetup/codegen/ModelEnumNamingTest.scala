@@ -2,7 +2,7 @@ package com.meetup.codegen
 
 import io.grhodes.simple.codegen.SimpleScalaCodegen
 
-import io.swagger.codegen.CodegenProperty
+import io.swagger.codegen.v3.CodegenProperty
 import org.scalatest.{FunSpec, Matchers}
 
 class ModelEnumNamingTest extends FunSpec with Matchers {

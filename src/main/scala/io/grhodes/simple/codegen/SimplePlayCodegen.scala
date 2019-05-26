@@ -5,8 +5,10 @@ import java.util
 import java.util.concurrent.atomic.AtomicReference
 import java.util.regex.Pattern
 
-import io.swagger.codegen._
-import io.swagger.models.properties.{ArrayProperty, MapProperty, Property, StringProperty}
+import io.swagger.codegen.v3.generators.DefaultCodegenConfig
+import io.swagger.codegen.v3.generators.scala.AbstractScalaCodegen
+import io.swagger.codegen.v3._
+import io.swagger.v3.oas.models.media.{Schema, StringSchema}
 import org.apache.commons.lang3.StringUtils
 
 import scala.collection.JavaConverters._
@@ -24,12 +26,13 @@ object SimplePlayCodegen {
 
 }
 
-class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
+class SimplePlayCodegen extends AbstractScalaCodegen with CodegenConfig {
   import SimplePlayCodegen._
 
   override def getHelp(): String = s"Generates ${getName()} library."
-  override def getName(): String = "simple-play"
+  override def getDefaultTemplateDir: String = getName()
   override def getTag(): CodegenType = CodegenType.CLIENT
+  override def getName(): String = "simple-play"
 
   val invokerPackage = new AtomicReference[String]("swagger.models")
   val invokerFolder = new AtomicReference[String](invokerPackage.get.replace(".", "/"))
@@ -37,7 +40,7 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
   {
     outputFolder = "generated-code/" + getName()
     cliOptions.add(CliOption.newBoolean(ARG_INCLUDE_SERIALIZATION, "To include or not include serializers in the model classes"))
-    cliOptions.add(CliOption.newBoolean(ARG_RESOURCE_OUTPUT_DIRECTORY, "The output resource directory"))
+    cliOptions.add(CliOption.newString(ARG_RESOURCE_OUTPUT_DIRECTORY, "The output resource directory"))
 
     /*
      * Template Location.  This is the location which templates will be read from.  The generator
@@ -50,9 +53,8 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
      */
     apiPackage = "swagger.api"
 
-    val resourceOutDir = Option(additionalProperties.get(ARG_RESOURCE_OUTPUT_DIRECTORY)).map(_.toString).getOrElse("conf")
     supportingFiles = List(
-      new SupportingFile("routes.mustache", resourceOutDir, "generated.routes")
+      new SupportingFile("routes.mustache", "", "generated.routes")
     ).asJava
 
     /*
@@ -60,25 +62,8 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
      */
     modelPackage = "swagger.models"
 
-    reservedWords = Set(
-      "abstract", "case", "catch", "class", "def", "do", "else", "extends",
-      "false", "final", "finally", "for", "forSome", "if", "implicit",
-      "import", "lazy", "match", "new", "null", "object", "override",
-      "package", "private", "protected", "return", "sealed", "super",
-      "this", "throw", "trait", "try", "true", "type", "val", "var",
-      "while", "with", "yield"
-    ).asJava
-
-    languageSpecificPrimitives = Set(
-      "Boolean",
-      "Double",
-      "Float",
-      "Int",
-      "Long",
-      "List",
-      "Map",
-      "String"
-    ).asJava
+    additionalProperties.put("java8", "true")
+    additionalProperties.put("jsr310", "true")
 
     instantiationTypes.put("array", "List")
     instantiationTypes.put("integer", "Int")
@@ -99,11 +84,13 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
     importMapping.remove("List")
     importMapping.remove("Set")
     importMapping.remove("Map")
+
     importMapping.put("LocalTime", "java.time.LocalTime")
     importMapping.put("Instant", "java.time.Instant")
     importMapping.put("LocalDate", "java.time.LocalDate")
     importMapping.put("ZonedDateTime", "java.time.ZonedDateTime")
     importMapping.put("LocalDateTime", "java.time.LocalDateTime")
+    importMapping.put("OffsetDateTime", "java.time.OffsetDateTime")
 
     modelTemplateFiles.put("model.mustache", ".scala")
   }
@@ -159,7 +146,7 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
             val mtch = pathVariableMatcher.matcher(op.path)
             while (mtch.find()) {
               val completeMatch = mtch.group()
-              val replacement = ":" + DefaultCodegen.camelize(mtch.group(1), true)
+              val replacement = ":" + DefaultCodegenConfig.camelize(mtch.group(1), true)
               op.path = op.path.replace(completeMatch, replacement)
             }
             op
@@ -171,14 +158,6 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
   }
 
   /**
-    * Escapes a reserved word as defined in the `reservedWords` array. Handle escaping
-    * those terms here.  This logic is only called if a variable matches the reseved words
-    *
-    * @return the escaped term
-    */
-  override def escapeReservedWord(name: String): String = s"`$name`"
-
-  /**
     * Location to write model files.  You can use the modelPackage() as defined when the class is
     * instantiated
     */
@@ -188,18 +167,8 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
     * Location to write api files.  You can use the apiPackage() as defined when the class is
     * instantiated
     */
-  override def apiFileFolder(): String = s"$outputFolder/${apiPackage().replace('.', File.separatorChar)}"
-
-  /**
-    * Optional - type declaration.  This is a String which is used by the templates to instantiate your
-    * types.  There is typically special handling for different property types
-    *
-    * @return a string value used as the `dataType` field for model templates, `returnType` for api templates
-    */
-  override def getTypeDeclaration(p: Property): String = p match {
-    case ap: ArrayProperty => s"${getSwaggerType(p)}[${getTypeDeclaration(ap.getItems)}]"
-    case mp: MapProperty => s"${getSwaggerType(p)}[String, ${getTypeDeclaration(mp.getAdditionalProperties)}]"
-    case _ => super.getTypeDeclaration(p)
+  override def apiFileFolder(): String = {
+    Option(additionalProperties.get(ARG_RESOURCE_OUTPUT_DIRECTORY)).map(_.toString).getOrElse("conf")
   }
 
   /**
@@ -209,13 +178,13 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
     * @return a string value of the type or complex model for this property
     * @see io.swagger.models.properties.Property
     */
-  override def getSwaggerType(p: Property): String = {
+  override def getSchemaType(p: Schema[_]): String = {
     val types = Set("date", "date-time", "timestamp", "local-time", "local-date-time")
 
-    val swaggerType = if (p.getClass.equals(classOf[StringProperty]) && types.contains(p.getFormat)) {
+    val swaggerType = if (p.getClass.equals(classOf[StringSchema]) && types.contains(p.getFormat)) {
       p.getFormat
     } else {
-      super.getSwaggerType(p)
+      super.getSchemaType(p)
     }
 
     val typ = if (typeMapping.containsKey(swaggerType)) {
@@ -244,5 +213,4 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
       s""""${escapeText(value).toLowerCase()}""""
     }
   }
-
 }
