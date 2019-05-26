@@ -9,7 +9,7 @@ CODEGEN=swagger-codegen/swagger-codegen
 GEN_ARG=$1
 GEN_NAME=$1
 SWAGGER_SPEC=$2
-GEN_NAME=simple-scala
+GEN_NAME=simple-play
 
 if [ -z $SWAGGER_SPEC ]; then
   SWAGGER_SPEC=swagger.yaml
@@ -35,7 +35,7 @@ for i in $parts; do
 done
 
 # The complete artifact path.
-A_PATH=$A_DIR/scala-2.11/${A_NAME}_2.11-$A_VERSION.jar
+A_PATH=$A_DIR/scala-2.12/${A_NAME}_2.12-$A_VERSION.jar
 
 GEN_DIR=generated-$GEN_ARG
 BUILD_OUT=$TMPDIR/generated-build-$RANDOM.out
@@ -61,9 +61,9 @@ fi
 # within an existing code base. Thus we provide one here so we can test the generated code
 # via compilation.
 
-echo 'scalaVersion := "2.11.8"
+echo 'scalaVersion := "2.12.8"
 
-libraryDependencies ++= Seq("com.typesafe.play" %% "play-json" % "2.5.15")
+libraryDependencies ++= Seq("com.typesafe.play" %% "play-json" % "2.7.2")
 ' > $GEN_DIR/build.sbt
 
 echo "  -> Attempting to build the generated code ..."

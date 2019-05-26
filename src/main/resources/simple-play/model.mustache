@@ -1,0 +1,10 @@
+package {{package}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+{{#models}}
+{{#model}}{{#description}}/**
+ * {{{description}}}
+ */{{/description}}
+{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{#discriminator}}{{>modelParent}}{{/discriminator}}{{^discriminator}}{{>modelClass}}{{/discriminator}}{{/isEnum}}
+{{/model}}{{/models}}

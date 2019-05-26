@@ -1,0 +1,10 @@
+trait {{classname}} {
+{{#vars}}{{#description}}/* {{{description}}} */
+{{/description}}  def {{name}}: {{#required}}{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{/required}}{{^required}}Option[{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}]{{/required}}{{#hasMore}}
+{{/hasMore}}{{^hasMore}}
+}{{/hasMore}}
+{{/vars}}{{#hasEnums}}
+    object {{classname}} {
+    {{#vars}}{{#isEnum}}{{>modelEnum}}{{/isEnum}}{{/vars}}
+    }
+{{/hasEnums}}
