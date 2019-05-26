@@ -8,7 +8,6 @@ import java.util.regex.Pattern
 import io.swagger.codegen._
 import io.swagger.models.properties.{ArrayProperty, MapProperty, Property, StringProperty}
 import org.apache.commons.lang3.StringUtils
-import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -26,8 +25,6 @@ object SimplePlayCodegen {
 
 class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
   import SimplePlayCodegen._
-
-  private val LOGGER = LoggerFactory.getLogger(classOf[SimplePlayCodegen])
 
   override def getHelp(): String = s"Generates ${getName()} library."
   override def getName(): String = "simple-play"
@@ -122,8 +119,15 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
     super.processOpts()
     additionalProperties.put(CodegenConstants.INVOKER_PACKAGE, invokerPackage.get())
 
-    modelPackage = Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".model").getOrElse("model")
-    apiPackage = Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".api").getOrElse("api")
+    val givenModelPkg = Option(additionalProperties.get(CodegenConstants.MODEL_PACKAGE)).map(_.toString)
+    modelPackage = givenModelPkg
+      .orElse(Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".model"))
+      .getOrElse("model")
+
+    val givenApiPkg = Option(additionalProperties.get(CodegenConstants.API_PACKAGE)).map(_.toString)
+    apiPackage = givenApiPkg
+      .orElse(Option(invokerPackage.get()).filter(_.nonEmpty).map(_  + ".api"))
+      .getOrElse("api")
 
     invokerFolder.set(invokerPackage.get().replace(".", "/"))
 
@@ -144,13 +148,10 @@ class SimplePlayCodegen extends DefaultCodegen with CodegenConfig {
 
   override def postProcessOperations(objs: util.Map[String, AnyRef]): util.Map[String, AnyRef] = {
     val ops = Option(objs.get("operations")).map(_.asInstanceOf[util.Map[String, Object]].asScala)
-    LOGGER.warn("postProcessOperations")
     ops.map { operations =>
-      LOGGER.warn("operations: " + operations.size)
       val op = operations.get("operation").collect {
         case operation: util.List[CodegenOperation] =>
           operation.asScala.map { op =>
-            LOGGER.warn(op.path)
             val pathVariableMatcher = Pattern.compile("\\{([^}]+)}")
             val mtch = pathVariableMatcher.matcher(op.path)
             while (mtch.find()) {
