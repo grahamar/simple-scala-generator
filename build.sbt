@@ -1,10 +1,12 @@
+import scala.sys.process._
+
 name := "simple-scala-generator"
 organization := "io.grhodes"
 version := "git describe --tags --dirty --always".!!.stripPrefix("v").trim
 
 scalaVersion := "2.12.2"
 
-crossScalaVersions := Seq(scalaVersion.value, "2.11.11", "2.10.6")
+//crossScalaVersions := Seq(scalaVersion.value, "2.11.11", "2.10.6")
 
 javacOptions in doc := Seq("-encoding", "UTF-8")
 
