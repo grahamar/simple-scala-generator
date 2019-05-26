@@ -1,6 +1,5 @@
 package io.grhodes.simple.codegen
 
-import java.io.File
 import java.util
 import java.util.concurrent.atomic.AtomicReference
 import java.util.regex.Pattern
@@ -14,6 +13,7 @@ import org.apache.commons.lang3.StringUtils
 import scala.collection.JavaConverters._
 
 object BaseScalaCodegen {
+  val ARG_SRC_MANAGED_DIRECTORY = "sourceManagedDir"
   val ARG_INCLUDE_SERIALIZATION = "includeSerialization"
   val NUMBER_TYPES = Set("Int", "Long", "Float", "Double")
 
@@ -56,6 +56,11 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
     val incSer = additionalProperties.get(ARG_INCLUDE_SERIALIZATION)
     val includeSerialization: java.lang.Boolean = Option(incSer).forall(java.lang.Boolean.TRUE.toString.equals(_))
     additionalProperties.put(ARG_INCLUDE_SERIALIZATION, includeSerialization)
+
+    val managedSrcOpt = Option(additionalProperties.get(ARG_SRC_MANAGED_DIRECTORY)).map(_.toString)
+    managedSrcOpt.foreach { managedSrc =>
+      sourceFolder = managedSrc.substring(outputFolder.length)
+    }
   }
 
   override def postProcessModels(objs: util.Map[String, AnyRef]): util.Map[String, AnyRef] = {

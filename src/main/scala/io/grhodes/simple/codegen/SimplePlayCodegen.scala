@@ -4,12 +4,7 @@ import io.swagger.codegen.v3._
 
 import scala.collection.JavaConverters._
 
-object SimplePlayCodegen {
-  val ARG_SRC_MANAGED_DIRECTORY = "sourceManagedDir"
-}
-
 class SimplePlayCodegen extends BaseScalaCodegen {
-  import SimplePlayCodegen._
   import BaseScalaCodegen._
 
   override def getHelp(): String = s"Generates ${getName()} library."
@@ -18,7 +13,6 @@ class SimplePlayCodegen extends BaseScalaCodegen {
   override def getName(): String = "simple-play"
 
   {
-    outputFolder = "generated-code/" + getName()
     cliOptions.add(CliOption.newBoolean(ARG_INCLUDE_SERIALIZATION, "To include or not include serializers in the model classes"))
     cliOptions.add(CliOption.newString(ARG_SRC_MANAGED_DIRECTORY, "The managed source directory"))
 
@@ -27,11 +21,6 @@ class SimplePlayCodegen extends BaseScalaCodegen {
      * will use the resource stream to attempt to read the templates.
      */
     templateDir = "simple-play"
-
-    val managedSrcOpt = Option(additionalProperties.get(ARG_SRC_MANAGED_DIRECTORY)).map(_.toString)
-    managedSrcOpt.foreach { managedSrc =>
-      sourceFolder = managedSrc.substring(outputFolder.length)
-    }
 
     /*
      * Api Package. Optional, if needed, this can be used in templates

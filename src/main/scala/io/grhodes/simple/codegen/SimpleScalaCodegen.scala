@@ -2,12 +2,7 @@ package io.grhodes.simple.codegen
 
 import io.swagger.codegen.v3._
 
-object SimpleScalaCodegen {
-  val ARG_SRC_MANAGED_DIRECTORY = "sourceManagedDir"
-}
-
 class SimpleScalaCodegen extends BaseScalaCodegen {
-  import SimplePlayCodegen._
   import BaseScalaCodegen._
 
   override def getHelp(): String = s"Generates ${getName()} library."
@@ -16,7 +11,6 @@ class SimpleScalaCodegen extends BaseScalaCodegen {
   override def getTag(): CodegenType = CodegenType.CLIENT
 
   {
-    outputFolder = "generated-code/" + getName()
     cliOptions.add(CliOption.newBoolean(ARG_INCLUDE_SERIALIZATION, "To include or not include serializers in the model classes"))
     cliOptions.add(CliOption.newString(ARG_SRC_MANAGED_DIRECTORY, "The managed source directory"))
 
@@ -25,11 +19,6 @@ class SimpleScalaCodegen extends BaseScalaCodegen {
      * will use the resource stream to attempt to read the templates.
      */
     templateDir = "simple-scala"
-
-    val managedSrcOpt = Option(additionalProperties.get(ARG_SRC_MANAGED_DIRECTORY)).map(_.toString)
-    managedSrcOpt.foreach { managedSrc =>
-      sourceFolder = managedSrc.substring(outputFolder.length)
-    }
 
     /*
      * Api Package. Optional, if needed, this can be used in templates
