@@ -1,6 +1,6 @@
 package com.meetup.codegen
 
-import io.grhodes.simple.codegen.SimpleScalaCodegen
+import io.grhodes.simple.codegen.BaseScalaCodegen
 
 import io.swagger.codegen.v3.CodegenProperty
 import org.scalatest.{FunSpec, Matchers}
@@ -35,7 +35,7 @@ class ModelEnumNamingTest extends FunSpec with Matchers {
     }
 
     it("should prefix numeric values with the word \"Number\"") {
-      SimpleScalaCodegen.NUMBER_TYPES.foreach { t =>
+      BaseScalaCodegen.NUMBER_TYPES.foreach { t =>
         val name = codeGen.toEnumVarName("1", t)
         name shouldBe "Number1"
       }
@@ -49,7 +49,7 @@ class ModelEnumNamingTest extends FunSpec with Matchers {
     }
 
     it("should do nothing for numeric values") {
-      SimpleScalaCodegen.NUMBER_TYPES.foreach { t =>
+      BaseScalaCodegen.NUMBER_TYPES.foreach { t =>
         codeGen.toEnumValue("1", t) shouldBe "1"
       }
     }

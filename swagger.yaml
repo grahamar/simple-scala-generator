@@ -94,6 +94,11 @@ paths:
       description: Create a myservice entity
       operationId: myservicePost
       parameters:
+        - in: query
+          name: test.name
+          required: true
+          schema:
+            type: string
         - name: id
           in: path
           description: The id of the myservice entity to fetch
@@ -136,6 +141,7 @@ components:
         - message
         - created
         - modified
+        - generated_at.start
       properties:
         id:
           type: integer
@@ -144,12 +150,15 @@ components:
           type: string
         optionalDescription:
           type: string
+        generated_at.start:
+          type: string
+          format: "date-time"
         created:
           type: string
           format: timestamp
         modified:
           type: string
-          format: timestamp
+          format: "date-time"
     MyserviceEntityCreate:
       required:
         - message

@@ -9,8 +9,8 @@ class MappedSwaggerDatePropertiesTest extends FunSpec with Matchers {
 
   val swaggerMappedTypes =
     Map[String, (String, String => Schema[_])](
-      ("date", ("LocalDate", mkSchema(new DateSchema))),
-      ("date-time", ("ZonedDateTime", mkSchema(new DateTimeSchema)))
+      ("date", ("java.time.LocalDate", mkSchema(new DateSchema))),
+      ("date-time", ("java.time.ZonedDateTime", mkSchema(new DateTimeSchema)))
     )
 
   describe("a swagger date/time property") {

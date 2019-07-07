@@ -112,8 +112,18 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
 
     if (typeMapping.containsKey(swaggerType)) {
       typeMapping.get(swaggerType)
-    } else {
+    } else if (swaggerType == null || !swaggerType.startsWith("java.time")) {
       toModelName(swaggerType)
+    } else {
+      modelNamePrefix + swaggerType + modelNameSuffix
+    }
+  }
+
+  override def toVarName(name: String): String = {
+    if (reservedWords.contains(name)) {
+      escapeReservedWord(name)
+    } else {
+      removeNonNameElementToCamelCase(name.replaceAll("\\.", "_"), "[-_:;#]")
     }
   }
 

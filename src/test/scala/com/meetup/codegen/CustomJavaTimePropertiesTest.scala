@@ -9,11 +9,11 @@ class CustomJavaTimePropertiesTest extends FunSpec with Matchers {
 
   val customMappedTypes =
     Map(
-      "timestamp" -> "Instant",
-      "local-time" -> "LocalTime",
-      "local-date-time" -> "LocalDateTime",
-      "date" -> "LocalDate",
-      "date-time" -> "ZonedDateTime"
+      "timestamp" -> "java.time.Instant",
+      "local-time" -> "java.time.LocalTime",
+      "local-date-time" -> "java.time.LocalDateTime",
+      "date" -> "java.time.LocalDate",
+      "date-time" -> "java.time.ZonedDateTime"
     )
 
   describe("a custom date/time property") {

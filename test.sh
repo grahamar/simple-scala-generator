@@ -38,7 +38,7 @@ done
 A_PATH=$A_DIR/scala-2.12/${A_NAME}_2.12-$A_VERSION.jar
 
 GEN_DIR=generated-$GEN_ARG
-BUILD_OUT=$TMPDIR/generated-build-$RANDOM.out
+BUILD_OUT=generated-build-$RANDOM.out
 
 echo "  -> Running the code generator ..."
 A_CP=`SBT_OPTS='-Dsbt.log.noformat=true' $SBT 'export runtime:fullClasspath' | tail -n 1 | cut -d ' ' -f 2`
@@ -68,7 +68,7 @@ libraryDependencies ++= Seq("com.typesafe.play" %% "play-json" % "2.7.2")
 
 echo "  -> Attempting to build the generated code ..."
 pushd $GEN_DIR > /dev/null
-BUILD_OUT=$TMPDIR/generated-build-$RANDOM.out
+BUILD_OUT=generated-build-$RANDOM.out
 $SBT compile > $BUILD_OUT
 RES=$?
 popd > /dev/null
