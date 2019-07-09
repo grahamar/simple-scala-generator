@@ -2,4 +2,21 @@ sealed abstract class {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatype
 object {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} {
   {{#allowableValues}}{{#enumVars}}case object {{name}} extends {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}({{{value}}})
   {{/enumVars}}{{/allowableValues}}
+
+  private val valueMap = Map(
+    {{#allowableValues}}{{#enumVars}}{{{value}}} -> {{name}}{{#hasMore}},{{/hasMore}}
+    {{/enumVars}}{{/allowableValues}}
+   )
+
+  /**
+   * The set of `{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}` instances.
+   */
+  val values: Set[{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] = valueMap.values.toSet
+
+  /**
+   * Get the `{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}` instance mapped by the given {{#dataType}}{{.}}{{/dataType}}{{^dataType}}{{datatype}}{{/dataType}} value,
+   * if there is one.
+   */
+  def fromValue(value: {{#dataType}}{{.}}{{/dataType}}{{^dataType}}{{datatype}}{{/dataType}}): Option[{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}] = valueMap.get(value)
+
 }
