@@ -1,5 +1,5 @@
-sealed trait {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
+sealed abstract class {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}(val value: {{#dataType}}{{.}}{{/dataType}}{{^dataType}}{{datatype}}{{/dataType}}) extends Product with Serializable
 object {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}} {
-  {{#allowableValues}}{{#enumVars}}case object {{name}} extends {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}
+  {{#allowableValues}}{{#enumVars}}case object {{name}} extends {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}({{{value}}})
   {{/enumVars}}{{/allowableValues}}
 }

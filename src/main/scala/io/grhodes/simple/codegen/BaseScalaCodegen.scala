@@ -127,13 +127,16 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
     }
   }
 
-  override def toEnumName(property: CodegenProperty): String = camelize(property.name.split("_"))
+  override def toEnumName(property: CodegenProperty): String = {
+    toEnumVarName(property.name, property.datatype)
+  }
 
   override def toEnumVarName(value: String, datatype: String): String = {
+    val safeVal = value.split("[ -_]").map(_.toUpperCase).mkString("_")
     if (NUMBER_TYPES.contains(datatype)) {
-      "Number" + value
+      "Number" + safeVal
     } else {
-      camelize(value.split("[ _]"))
+      safeVal
     }
   }
 
@@ -141,7 +144,7 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
     if (NUMBER_TYPES.contains(datatype)) {
       value
     } else {
-      s""""${escapeText(value).toLowerCase()}""""
+      s""""${escapeText(value)}""""
     }
   }
 

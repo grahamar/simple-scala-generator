@@ -136,11 +136,10 @@ servers:
 components:
   schemas:
     SentimentPolarity:
-      description: Polarity of the sentiment
+      description: The taxonomy of the category
       enum:
-        - positive
-        - neutral
-        - negative
+        - iab-qag
+        - iptc-subjectcode
       type: string
     MyserviceEntity:
       required:
