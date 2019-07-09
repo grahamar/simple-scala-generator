@@ -135,6 +135,20 @@ servers:
   - url: http://myservice.myservice.mup-prod.mup.zone
 components:
   schemas:
+    MediaFormat:
+      description: The format of media
+      enum:
+        - BMP
+        - GIF
+        - JPEG
+        - PNG
+        - TIFF
+        - PSD
+        - ICO
+        - CUR
+        - WEBP
+        - SVG
+      type: string
     SentimentPolarity:
       description: The taxonomy of the category
       enum:

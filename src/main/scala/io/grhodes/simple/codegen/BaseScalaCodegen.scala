@@ -128,11 +128,19 @@ abstract class BaseScalaCodegen extends AbstractScalaCodegen with CodegenConfig 
   }
 
   override def toEnumName(property: CodegenProperty): String = {
-    toEnumVarName(property.name, property.datatype)
+    property.name.split("[\\s-_]").map(_.toUpperCase).mkString("_")
   }
 
   override def toEnumVarName(value: String, datatype: String): String = {
-    val safeVal = value.split("[ -_]").map(_.toUpperCase).mkString("_")
+    println("--------------------------------toEnumVarName-----------------------------------")
+    println(value)
+    val split = value.split("[ -_]")
+    val safeVal = if(split.nonEmpty) {
+      split.map(_.toUpperCase).mkString("_")
+    } else {
+      value.toUpperCase
+    }
+
     if (NUMBER_TYPES.contains(datatype)) {
       "Number" + safeVal
     } else {
