@@ -2,22 +2,11 @@ package {{package}}
 
 {{#models}}
 {{#model}}
-/**
-{{#title}} * = {{{title}}} =
- *
-{{/title}}
-{{#description}} * {{{description}}}
- *
-{{/description}}
-{{#vars}}
- * @param {{{name}}} {{#description}}{{{description}}}{{/description}}
-{{/vars}}
- */
-case class {{classname}} (
-  {{#vars}}
-  {{{name}}}: {{#required}}{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{/required}}{{^required}}Option[{{#isEnum}}{{classname}}.{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}]{{/required}}{{#hasMore}},{{/hasMore}}
-  {{/vars}}
-)
-
+{{^isEnum}}
+{{>class}}
+{{/isEnum}}
+{{#isEnum}}
+{{>enum}}
+{{/isEnum}}
 {{/model}}
 {{/models}}

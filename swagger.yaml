@@ -135,6 +135,13 @@ servers:
   - url: http://myservice.myservice.mup-prod.mup.zone
 components:
   schemas:
+    SentimentPolarity:
+      description: Polarity of the sentiment
+      enum:
+        - positive
+        - neutral
+        - negative
+      type: string
     MyserviceEntity:
       required:
         - id

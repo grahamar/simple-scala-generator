@@ -1,0 +1,47 @@
+{{#hasEnums}}
+import {{classname}}._
+{{/hasEnums}}
+
+/**
+{{#title}} * = {{{title}}} =
+ *
+{{/title}}
+{{#description}} * {{{description}}}
+ *
+{{/description}}
+{{#vars}}
+ * @param {{{name}}} {{#description}}{{{description}}}{{/description}}
+{{/vars}}
+ */
+case class {{classname}} (
+  {{#vars}}
+  {{name}}: {{^required}}Option[{{/required}}{{^isEnum}}{{datatype}}{{/isEnum}}{{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}
+  {{/vars}}
+)
+
+{{#hasEnums}}
+object {{classname}} {
+  {{#vars}}
+  {{#isEnum}}
+  sealed trait {{datatypeWithEnum}}
+  {{#_enum}}
+  case object {{#fnEnumEntry}}{{.}}{{/fnEnumEntry}} extends {{datatypeWithEnum}}
+  {{/_enum}}
+
+  object {{datatypeWithEnum}} {
+    def to{{datatypeWithEnum}}(s: String): Option[{{datatypeWithEnum}}] = s match {
+{{#_enum}}      case "{{#fnEnumEntry}}{{.}}{{/fnEnumEntry}}" => Some({{#fnEnumEntry}}{{.}}{{/fnEnumEntry}})
+{{/_enum}}
+      case _ => None
+    }
+
+    def from{{datatypeWithEnum}}(x: {{datatypeWithEnum}}): String = x match {
+{{#_enum}}      case {{#fnEnumEntry}}{{.}}{{/fnEnumEntry}} => "{{#fnEnumEntry}}{{.}}{{/fnEnumEntry}}"
+{{/_enum}}
+    }
+  }
+
+  {{/isEnum}}
+  {{/vars}}
+}
+{{/hasEnums}}

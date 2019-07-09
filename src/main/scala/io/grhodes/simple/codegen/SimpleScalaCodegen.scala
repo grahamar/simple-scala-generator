@@ -54,6 +54,7 @@ class SimpleScalaCodegen extends BaseScalaCodegen {
     importMapping.remove("Map")
 
     modelTemplateFiles.put("model.mustache", ".scala")
+    modelTemplateFiles.put("enum.mustache", ".scala")
   }
 
 }
