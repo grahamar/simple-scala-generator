@@ -4,9 +4,9 @@ object {{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{cla
   {{/enumVars}}{{/allowableValues}}
 
   private val valueMap = Map(
-    {{#allowableValues}}{{#enumVars}}{{{value}}} -> {{name}}{{#hasMore}},{{/hasMore}}
-    {{/enumVars}}{{/allowableValues}}
-   )
+    {{#allowableValues}}{{#enumVars}}{{{value}}} -> {{name}}{{^-last}},
+    {{/-last}}{{/enumVars}}
+  {{/allowableValues}})
 
   /**
    * The set of `{{#datatypeWithEnum}}{{.}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{classname}}{{/datatypeWithEnum}}` instances.
